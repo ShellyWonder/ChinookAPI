@@ -1,0 +1,229 @@
+:root {
+
+    /* fonts */
+    --cf-body-font: 'Montserrat', sans-serif;
+    --cf-title-font: 'Fira Sans', system-ui;
+    /* colors */
+    --cf-dark-color: #212121;
+    --cf-light-color: #dceffe;
+    /* text styles */
+    --cf-title-color: var(--cf-dark-color);
+    --cf-font-size: 1rem;
+
+    /* the official cf blue is #2b404f */
+    --cf-blue-color-dark: #102e44;
+    --cf-blue-color: #2b404f;
+    --cf-blue-color-light: #456f8d;
+
+    /* the official cf orange is #ff993b */
+    --cf-orange-color-dark: #ff5713;
+    --cf-orange-color: #ff993b;
+    --cf-orange-color-light: #ffc209;
+
+    /* gradients */
+    --cf-orange-gradient: linear-gradient(to right, var(--cf-orange-color-dark), var(--cf-orange-color), var(--cf-orange-color-light));
+    --cf-orange-btn-gradient: linear-gradient(45deg, var(--cf-orange-color-dark), var(--cf-orange-color), var(--cf-orange-color-light));
+    --cf-blue-gradient: linear-gradient(to right, var(--cf-blue-color-dark), var(--cf-blue-color), var(--cf-blue-color-light));
+    --cf-blue-radial-gradient: radial-gradient(circle, var(--cf-blue-color), var(--cf-blue-color-dark));
+    --cf-light-grey-radial-gradient: radial-gradient(circle, #fafafa, #eaeaea);
+}
+
+html,
+body {
+    font-family: var(--cf-body-font);
+    font-size: var(--cf-font-size);
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background: var(--cf-light-grey-radial-gradient);
+    background-position: right bottom;
+    background-repeat: no-repeat;
+    color: var(--cf-dark-color);
+}
+
+.navbar-bg {
+    background: var(--cf-blue-radial-gradient);
+    border: 1px solid var(--cf-dark-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+}
+
+main {
+    flex-grow: 1;
+}
+
+footer {
+    flex-shrink: 0;
+    background: var(--cf-blue-radial-gradient);
+    color: var(--cf-light-color);
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--cf-title-font);
+    font-weight: 900;
+    text-transform: uppercase;
+
+}
+
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-family: var(--cf-title-font);
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.title-bg {
+    background: var(--cf-orange-gradient);
+    color: transparent;
+    background-clip: text;
+    --webkit-background-clip: text;
+    display: inline-block;
+}
+
+footer .bi {
+    color: var(--cf-blue-color-light);
+    font-size: 3rem;
+    padding-left: .5rem;
+    transition: color 0.25s;
+}
+
+footer .bi:hover {
+    color: var(--cf-orange-color);
+}
+
+.footer-bg {
+    background: var(--cf-blue-radial-gradient);
+
+}
+
+
+.btn-cf-orange,
+a.btn-cf-orange {
+    background: var(--cf-orange-btn-gradient);
+    border-color: var(--cf-orange-color);
+    color: var(--cf-dark-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+    .btn-cf-orange:hover,
+    a.btn-cf-orange:hover {
+        border-color: var(--cf-light-color);
+        border-width: 1px;
+        border-style: solid;
+        font-weight: bold;
+        color: var(--cf-dark-color);
+        /*color: var(--cf-light-color);*/
+    }
+
+.btn-cf-orange:focus,
+.btn-cf-orange:active,
+a.btn-cf-orange:focus,
+a.btn-cf-orange:active {
+    background-color: var(--cf-orange-color);
+    border-color: var(--cf-orange-color-light);
+    box-shadow: 0 0 0 0.20rem rgba(255, 153, 59, 0.5);
+    /* Adjust shadow color for focus state */
+}
+
+
+.btn-cf-orange-outline {
+    background-color: transparent;
+    border: 2px solid var(--cf-orange-color);
+    color: var(--cf-blue-color-dark);
+}
+
+.btn-cf-orange-outline:hover {
+    background: var(--cf-orange-btn-gradient);
+    color: white;
+}
+
+.btn-cf-orange-outline:focus,
+.btn-cf-orange-outline:active {
+    background-color: var(--cf-orange-color);
+    border-color: var(--cf-orange-color-light);
+    color: white;
+    box-shadow: 0 0 0 0.25rem rgba(255, 153, 59, 0.5);
+    /* Adjust shadow color for focus state */
+}
+
+.btn-cf-blue {
+    background: var(--cf-blue-gradient);
+    border-color: var(--cf-blue-color-dark);
+    color: var(--cf-light-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-cf-blue:hover {
+    border-color: var(--cf-light-color);
+    color: var(--cf-light-color);
+
+}
+
+.btn-cf-blue:focus,
+.btn-cf-blue:active {
+    background-color: var(--cf-blue-color-light);
+    border-color: var(--cf-blue-color-light);
+    box-shadow: 0 0 0 0.20rem rgba(43, 64, 79, 0.5);
+    /* Adjust shadow color for focus state */
+}
+
+.btn-cf-blue-outline {
+    background-color: transparent;
+    border: 2px solid var(--cf-blue-color);
+    color: var(--cf-blue-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-cf-blue-outline:hover {
+    background-color: var(--cf-blue-color);
+    color: white;
+}
+
+.btn-cf-blue-outline:focus,
+.btn-cf-blue-outline:active {
+    background-color: var(--cf-blue-color-light);
+    border-color: var(--cf-blue-color-light);
+    color: white;
+    box-shadow: 0 0 0 0.25rem rgba(43, 64, 79, 0.5);
+    /* Adjust shadow color for focus state */
+}
+
+.ctaTitle {
+    font-family: "Fira Sans", system-ui;
+    font-weight: 900;
+    font-style: normal;
+    font-size: 2rem;
+    text-transform: uppercase;
+    line-height: 2rem;
+}
+
+.ctaSubTitle {
+    font-family: var(--cf-title-font);
+    font-weight: 300;
+    font-style: normal;
+    line-height: 1.4rem;
+    font-size: 1.4rem;
+}
+
+.taskform {
+    border: 1px solid var(--cf-orange-color);
+    border-radius: 15px;
+    padding: 2rem;
+    font-size: 1.2rem;  
+    background: radial-gradient(circle, #b3e5ff87, #b3e5ff);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35222.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChinookInterviewYT", "ChinookInterviewYT\ChinookInterviewYT.csproj", "{23A2F72E-8089-459F-8AAC-4A5D46E62B9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChinookInterviewYT.Client", "ChinookInterviewYT.Client\ChinookInterviewYT.Client.csproj", "{E5285823-E55B-467A-AF6D-48E8AE2BE483}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{23A2F72E-8089-459F-8AAC-4A5D46E62B9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23A2F72E-8089-459F-8AAC-4A5D46E62B9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23A2F72E-8089-459F-8AAC-4A5D46E62B9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23A2F72E-8089-459F-8AAC-4A5D46E62B9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5285823-E55B-467A-AF6D-48E8AE2BE483}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5285823-E55B-467A-AF6D-48E8AE2BE483}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5285823-E55B-467A-AF6D-48E8AE2BE483}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5285823-E55B-467A-AF6D-48E8AE2BE483}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4FAAD17D-B2F2-4C7E-8178-992E279AB2A4}
+	EndGlobalSection
+EndGlobal
