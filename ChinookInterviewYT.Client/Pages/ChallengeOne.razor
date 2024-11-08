@@ -1,0 +1,156 @@
+﻿@page "/challengeone"
+@using ChinookInterviewYT.Client.Models.DTOs
+@rendermode InteractiveWebAssembly
+@inject HttpClient Http
+
+<div class="container-xxl my-3">
+
+        <h3 class="ctaTitle">Challenge One</h3>
+        <p class="ctaSubTitle">Display a list of all customers in the database ordered by Last Name.</p>
+   
+        <!-- Search Input -->
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Search customers by name..." @bind="searchTerm" />
+        <button class="btn btn-primary" @onclick="OnSearch">Search</button>
+        @if (isSearchActive)
+        {
+            <button class="btn btn-secondary ms-2" @onclick="ClearSearch">Clear Search</button>
+        }
+    </div>
+
+    @if (!isLoading && pagedCustomer.Customers != null && pagedCustomer.Customers.Any())
+    {
+        <table class="table table-striped table-primary shadow">
+        <thead class="table-dark">
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Full Name</th>
+            </tr>
+        </thead>
+        <tbody>
+                @foreach (var customer in pagedCustomer.Customers)
+                {
+                    <tr>
+                    <td>@customer.FirstName</td>
+                    <td>@customer.LastName</td>
+                    <td>@customer.Email</td>
+                    <td>@customer.FullName</td>
+                   </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (!isSearchActive)
+        {
+            <!-- Display pagination only if not in search mode -->
+            <div class="pagination">
+                <button class="btn btn-primary" @onclick="PreviousPage" disabled="@(!CanGoPrevious)">Previous</button>
+            <span>Page @pagedCustomer.PageNumber of @pagedCustomer.TotalPages</span>
+            <button class="btn btn-primary" @onclick="NextPage" disabled="@(!CanGoNext)">Next</button>
+        </div>
+        }
+    }
+    else if (!isLoading)
+    {
+        <p>No results found.</p>
+    }
+    else
+    {
+      <p>Loading ...</p>
+    }
+</div>
+
+@code {
+    private PagedCustomerDTO pagedCustomer = new PagedCustomerDTO();
+    private bool isLoading = true;
+    private string searchTerm = string.Empty;
+    private bool isSearchActive = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCustomersAsync();
+    }
+
+    private async Task LoadCustomersAsync(int pageNumber = 1)
+    {
+        isLoading = true;
+
+        try
+        {
+            // Determine the base URL
+            string url;
+            if (isSearchActive && !string.IsNullOrWhiteSpace(searchTerm))
+            {
+                // Use the search endpoint
+                url = $"api/Customers/search?searchTerm={Uri.EscapeDataString(searchTerm)}";
+            }
+            else
+            {
+                // Use the paginated endpoint
+                url = $"api/Customers/GetPagedCustomers?pageNumber={pageNumber}&pageSize={pagedCustomer.PageSize}";
+            }
+
+            Console.WriteLine($"Fetching data from URL: {url}");
+
+            // Request data from the API
+            var response = await Http.GetFromJsonAsync<PagedCustomerDTO>(url);
+            pagedCustomer = response ?? new PagedCustomerDTO();
+
+            if (response != null)
+            {
+                Console.WriteLine($"Received {pagedCustomer.Customers.Count} customers.");
+            }
+            else
+            {
+                Console.WriteLine("No data returned from the API.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching data: {ex.Message}");
+            pagedCustomer = new PagedCustomerDTO();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+
+    private async Task OnSearch()
+    {
+        isSearchActive = true;
+        // Load the first page with the search term
+        await LoadCustomersAsync(1);
+    }
+
+    private async Task ClearSearch()
+    {
+        isSearchActive = false;
+        searchTerm = string.Empty;
+        await LoadCustomersAsync(1); // Reset to the full paginated list
+    }
+
+    //  Pagination properties
+    private bool CanGoNext => pagedCustomer.PageNumber < pagedCustomer.TotalPages;
+    private bool CanGoPrevious => pagedCustomer.PageNumber > 1;
+
+    private async Task NextPage()
+    {
+        if (!isSearchActive && CanGoNext)
+        {
+            await LoadCustomersAsync(pagedCustomer.PageNumber + 1);
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (!isSearchActive && CanGoPrevious)
+        {
+            await LoadCustomersAsync(pagedCustomer.PageNumber - 1);
+        }
+    }
+}
