@@ -4,7 +4,7 @@
     {
         public int AlbumId { get; set; }
         public string? AlbumTitle { get; set; } = null!;
-        public List<TrackDTO> Track { get; set; } = new List<TrackDTO>();
+        public List<TrackDTO> Tracks { get; set; } = new List<TrackDTO>();
         public string? AlbumUrl { get; set; } = null!;
         public int TotalAlbumDuration { get; set; } = 0;
     }
