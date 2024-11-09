@@ -26,7 +26,6 @@ namespace ChinookInterviewYT.Data.Repositories
                                      {
                                          AlbumId = album.AlbumId,
                                          AlbumTitle = album.Title,
-                                         //AlbumUrl = album.AlbumUrl,
                                          TotalAlbumDuration = album.Tracks.Sum(track => track.Milliseconds),
                                          Tracks = album.Tracks.Select(track => new TrackDTO
                                          {

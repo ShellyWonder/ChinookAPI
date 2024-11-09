@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChinookInterviewYT.Controllers
 {
-    public class ArtistsController(IArtistService artistService) : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ArtistsController(IArtistService artistService) : ControllerBase
     {
         private readonly IArtistService _artistService = artistService;
 

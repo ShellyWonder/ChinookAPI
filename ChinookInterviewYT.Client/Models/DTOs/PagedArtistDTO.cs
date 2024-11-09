@@ -4,7 +4,7 @@ namespace ChinookInterviewYT.Client.Models.DTOs
 {
     public class PagedArtistDTO
     {
-        [JsonPropertyName("result")] // Maps the JSON "results" to the "Artists" property
+        
         public List<ArtistDTO> Artists { get; set; } = [];
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;
