@@ -29,10 +29,11 @@ namespace ChinookInterviewYT.Data.Repositories
                  );
             }
 
-            return await customers.OrderByDescending(c => c.LastName)
-                                                .Skip((pageNumber - 1) * pageSize)
-                                                .Take(pageSize)
-                                                .ToListAsync();
+            return await customers.OrderBy(c => c.LastName)
+                                  .ThenBy(c => c.FirstName)
+                                  .Skip((pageNumber - 1) * pageSize)
+                                  .Take(pageSize)
+                                  .ToListAsync();
         }
         public async Task<int> GetTotalCountAsync(string searchTerm)
         {
