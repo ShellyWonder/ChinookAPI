@@ -1,0 +1,61 @@
+﻿<!-- SearchComponent.razor -->
+
+<div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="@dynamicPlaceholder" @bind="internalSearchTerm" @onfocus="ClearPlaceholder"
+           @onblur="RestorePlaceholder" />
+    <button class="btn btn-primary" @onclick="OnSearchClick">Search</button>
+    @if (IsSearchActive)
+    {
+        <button class="btn btn-secondary ms-2" @onclick="OnClearSearchClick">Clear Search</button>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string SearchTerm { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Placeholder { get; set; } = "Search . . . ";
+
+    [Parameter]
+    public bool IsSearchActive { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnSearch { get; set; }
+
+    [Parameter]
+    public EventCallback OnClearSearch { get; set; }
+
+    private string? internalSearchTerm;
+    private string? dynamicPlaceholder;
+
+    protected override void OnInitialized()
+    {
+        dynamicPlaceholder = Placeholder;
+    }
+
+    private void ClearPlaceholder()
+    {
+        dynamicPlaceholder = string.Empty;
+    }
+
+    private void RestorePlaceholder()
+    {
+        dynamicPlaceholder = string.IsNullOrEmpty(internalSearchTerm) ? Placeholder : string.Empty;
+    }
+
+    private async Task OnSearchClick()
+    {
+        IsSearchActive = true;
+        SearchTerm = internalSearchTerm!;
+        await OnSearch.InvokeAsync(SearchTerm);
+    }
+
+    private async Task OnClearSearchClick()
+    {
+        IsSearchActive = false;
+        internalSearchTerm = string.Empty;
+        dynamicPlaceholder = Placeholder; // Reset placeholder on clear
+        await OnClearSearch.InvokeAsync();
+    }
+}
