@@ -1,5 +1,6 @@
 ﻿@page "/challengetwo"
 @using ChinookInterviewYT.Client.Models.DTOs
+@using ChinookInterviewYT.Client.Models.Wrappers
 @rendermode InteractiveWebAssembly
 @inject HttpClient Http
 @inject NavigationManager Nav
@@ -7,20 +8,21 @@
 <div class="container-xxl my-3">
 
     <h3 class="ctaTitle">Challenge Two: Display Artists, Albums, and Tracks</h3>
-    <p class="ctaSubTitle border-bottom mb-5">Write a query that retrieves all artists, their albums, and the corresponding tracks. 
+    <p class="ctaSubTitle border-bottom mb-5">
+        Write a query that retrieves all artists, their albums, and the corresponding tracks. 
         The output is ordered by the artist’s name, album title, and track title. 
     </p>
    
    
-    @if (isLoading == false)
+    @if (!isLoading)
     {
         <div class="pagination b-stack gap-2 justify-content-end">
             <button class="btn btn-primary" @onclick="PreviousPage" disabled="@(!CanGoPrevious)">Previous</button>
-            <span class="mx-2">Page @pagedArtistDTO.PageNumber of @pagedArtistDTO.TotalPages</span>
+            <span class="mx-2">Page @pagedArtistDTO?.PageNumber of @pagedArtistDTO?.TotalPages</span>
             <button class="btn btn-primary" @onclick="NextPage" disabled="@(!CanGoNext)">Next</button>
         </div>
         <div>
-            @foreach (var artist in pagedArtistDTO.Artists)
+            @foreach (var artist in pagedArtistDTO?.Artists ?? new List<ArtistDTO>())
             {
                 <div class="my-3 border"> 
                <div>@artist.ArtistName</div>
@@ -42,8 +44,8 @@
     [SupplyParameterFromQuery]
     public int PageSize { get; set; } = 10;
 
-
-    private PagedArtistDTO pagedArtistDTO = new();
+    private ArtistsResponse? artistsResponse;
+    private PagedArtistDTO? pagedArtistDTO => artistsResponse?.Value;
     private bool isLoading = true;
 
     protected override async Task OnParametersSetAsync()
@@ -52,28 +54,31 @@
 
         try
         {
-            pagedArtistDTO = await Http.GetFromJsonAsync<PagedArtistDTO>($"api/Artists/AlbumsandTracksPaged?pageNumber={PageNumber}&pageSize={PageSize}")
+            artistsResponse = await Http.GetFromJsonAsync<ArtistsResponse>($"api/Artists/AlbumsandTracksPaged?pageNumber={PageNumber}&pageSize={PageSize}")
             ?? throw new HttpIOException(HttpRequestError.InvalidResponse);
         }
         catch (Exception)
         {
 
-            PagedArtistDTO pagedArtistDTO = new()
+            artistsResponse = new ArtistsResponse
                 {
-                    Artists = new List<ArtistDTO>(),
-                    PageNumber = 1,
-                    PageSize = 5,
-                    TotalCount = 0
+                    Value = new PagedArtistDTO
+                    {
+                        Artists = new List<ArtistDTO>(),
+                        PageNumber = 1,
+                        PageSize = 5,
+                        TotalCount = 0
+                    },
+                    Result = "Error"
                 };
-
         }
         isLoading = false;
 
 
     }
     //  Pagination properties
-    private bool CanGoNext => pagedArtistDTO.PageNumber < pagedArtistDTO.TotalPages;
-    private bool CanGoPrevious => pagedArtistDTO.PageNumber > 1;
+    private bool CanGoNext => pagedArtistDTO?.PageNumber < pagedArtistDTO?.TotalPages;
+    private bool CanGoPrevious => pagedArtistDTO?.PageNumber > 1;
 
     private void NextPage()
     {
@@ -81,7 +86,7 @@
         // {
         //     await LoadCustomersAsync(pagedArtistDTO.PageNumber + 1);
         // }
-        PageNumber = pagedArtistDTO.PageNumber + 1;
+        PageNumber = pagedArtistDTO?.PageNumber + 1 ?? PageNumber;
         GetPage(PageNumber);
     }
 
@@ -91,7 +96,7 @@
         // {
         //     await LoadCustomersAsync(pagedArtistDTO.PageNumber - 1);
         // }
-        PageNumber = pagedArtistDTO.PageNumber - 1;
+        PageNumber = pagedArtistDTO?.PageNumber - 1 ?? PageNumber;
         GetPage(PageNumber);
     }
     private void GetPage(int pageNumber)
@@ -99,7 +104,7 @@
         Dictionary<string, object?> query = new()
         {
             {"pageNumber", pageNumber},
-            {"pageSize", pagedArtistDTO.PageSize},
+            {"pageSize", pagedArtistDTO?.PageSize ?? PageSize},
         };
         string url = Nav.GetUriWithQueryParameters(query);
         Nav.NavigateTo(url);
