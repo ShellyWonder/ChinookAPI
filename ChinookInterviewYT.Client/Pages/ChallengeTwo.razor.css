@@ -1,0 +1,24 @@
+﻿.artist-list > div:nth-child(odd){
+    background-color:aliceblue;
+}
+.artist-list > div:nth-child(even){
+    background-color: #ff993b10;
+}
+.artist-list > div {
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: var(--cf-blue-color);
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+}
+.coverArt {
+    width: 250px;
+    height: 250px;
+    border-radius: 15px;
+    border-style: solid;
+    border-width: 1px;
+}
+.trackList{
+    font-size: .9rem;
+}

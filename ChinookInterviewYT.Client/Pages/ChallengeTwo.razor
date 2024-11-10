@@ -21,11 +21,38 @@
             <span class="mx-2">Page @pagedArtistDTO?.PageNumber of @pagedArtistDTO?.TotalPages</span>
             <button class="btn btn-primary" @onclick="NextPage" disabled="@(!CanGoNext)">Next</button>
         </div>
-        <div>
+        <div class="artist-list">
             @foreach (var artist in pagedArtistDTO?.Artists ?? new List<ArtistDTO>())
             {
-                <div class="my-3 border"> 
-               <div>@artist.ArtistName</div>
+                <div> 
+               <div class="fw-bold fs-3 my-2">@artist.ArtistName</div>
+                   @foreach (var album in artist.Albums)
+                   {
+                            //hstack = horizontal stack makes it a flexbox
+                          <div class="hstack gap-3 align-items-start mb-3">
+                                <div>
+                                    <img class="coverArt" src="/images/AlbumPlaceHolder.png"/>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold fs-5">@album.AlbumTitle
+                                    <span class="lead">
+                                            (Total Duration: @TimeSpan.FromMilliseconds(album.TotalAlbumDuration).ToString("hh\\:mm\\:ss"))
+                                    </span>
+                                    </div>
+                                    <div class="lead">Track List</div>
+                                    <ol>
+                                        @foreach (var track in album.Tracks)
+                                        {
+                                           <li class="trackList">
+                                               @track.TrackTitle
+                                           </li> 
+                                        }
+                                    </ol>
+
+                                </div>
+                          </div>  
+                   }
+
                 </div>
             }
         </div>    
