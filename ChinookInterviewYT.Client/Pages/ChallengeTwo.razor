@@ -16,11 +16,8 @@
    
     @if (!isLoading)
     {
-        <div class="pagination b-stack gap-2 justify-content-end">
-            <button class="btn btn-primary" @onclick="PreviousPage" disabled="@(!CanGoPrevious)">Previous</button>
-            <span class="mx-2">Page @pagedArtistDTO?.PageNumber of @pagedArtistDTO?.TotalPages</span>
-            <button class="btn btn-primary" @onclick="NextPage" disabled="@(!CanGoNext)">Next</button>
-        </div>
+        
+        
         <div class="artist-list">
             @foreach (var artist in pagedArtistDTO?.Artists ?? new List<ArtistDTO>())
             {
@@ -49,13 +46,18 @@
                                         }
                                     </ol>
 
-                                </div>
+                                </div> 
                           </div>  
                    }
 
                 </div>
             }
-        </div>    
+        </div>
+        <!-- Pagination Component -->
+        <PaginationComponent PageNumber="pagedArtistDTO!.PageNumber"
+                             TotalPages="pagedArtistDTO.TotalPages"
+                             OnNext="NextPage"
+                             OnPrevious="PreviousPage" />
     }
     
     else
@@ -103,37 +105,49 @@
 
 
     }
+    // //  Pagination properties
+    // private bool CanGoNext => pagedArtistDTO?.PageNumber < pagedArtistDTO?.TotalPages;
+    // private bool CanGoPrevious => pagedArtistDTO?.PageNumber > 1;
+
+    // private void NextPage()
+    // {
+    //     PageNumber = pagedArtistDTO?.PageNumber + 1 ?? PageNumber;
+    //     GetPage(PageNumber);
+    // }
+
+    // private void PreviousPage()
+    // {
+        
+    //     PageNumber = pagedArtistDTO?.PageNumber - 1 ?? PageNumber;
+    //     GetPage(PageNumber);
+    // }
+    // private void GetPage(int pageNumber)
+    // {
+    //     Dictionary<string, object?> query = new()
+    //     {
+    //         {"pageNumber", pageNumber},
+    //         {"pageSize", pagedArtistDTO?.PageSize ?? PageSize},
+    //     };
+    //     string url = Nav.GetUriWithQueryParameters(query);
+    //     Nav.NavigateTo(url);
+    // }
     //  Pagination properties
-    private bool CanGoNext => pagedArtistDTO?.PageNumber < pagedArtistDTO?.TotalPages;
-    private bool CanGoPrevious => pagedArtistDTO?.PageNumber > 1;
+    private bool CanGoNext => pagedArtistDTO!.PageNumber < pagedArtistDTO.TotalPages;
+    private bool CanGoPrevious => pagedArtistDTO!.PageNumber > 1;
 
-    private void NextPage()
+    private async Task NextPage()
     {
-        // if (!isSearchActive && CanGoNext)
-        // {
-        //     await LoadCustomersAsync(pagedArtistDTO.PageNumber + 1);
-        // }
-        PageNumber = pagedArtistDTO?.PageNumber + 1 ?? PageNumber;
-        GetPage(PageNumber);
-    }
-
-    private void PreviousPage()
-    {
-        // if (!isSearchActive && CanGoPrevious)
-        // {
-        //     await LoadCustomersAsync(pagedArtistDTO.PageNumber - 1);
-        // }
-        PageNumber = pagedArtistDTO?.PageNumber - 1 ?? PageNumber;
-        GetPage(PageNumber);
-    }
-    private void GetPage(int pageNumber)
-    {
-        Dictionary<string, object?> query = new()
+        if (CanGoNext)
         {
-            {"pageNumber", pageNumber},
-            {"pageSize", pagedArtistDTO?.PageSize ?? PageSize},
-        };
-        string url = Nav.GetUriWithQueryParameters(query);
-        Nav.NavigateTo(url);
+            await OnParametersSetAsync();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (CanGoPrevious)
+        {
+            await OnParametersSetAsync();
+        }
     }
 }

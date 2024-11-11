@@ -40,8 +40,7 @@
             </tbody>
         </table>
 
-        @* @if (!isSearchActive) *@
-        
+           
             <!-- Pagination Component -->
             <PaginationComponent PageNumber="pagedCustomer.PageNumber"
             TotalPages="pagedCustomer.TotalPages"
@@ -138,7 +137,7 @@
 
     private async Task NextPage()
     {
-        if (CanGoNext) /* if (!isSearchActive && CanGoNext) */
+        if (CanGoNext) 
         {
             await LoadCustomersAsync(pagedCustomer.PageNumber + 1);
         }
@@ -146,7 +145,7 @@
 
     private async Task PreviousPage()
     {
-        if (CanGoPrevious)        /* if (!isSearchActive && CanGoPrevious) */
+        if (CanGoPrevious)       
         {
             await LoadCustomersAsync(pagedCustomer.PageNumber - 1);
         }

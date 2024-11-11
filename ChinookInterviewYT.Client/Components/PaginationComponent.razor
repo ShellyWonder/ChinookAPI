@@ -2,7 +2,7 @@
 
 <div class="d-flex justify-content-center align-items-center">
     <button class="btn btn-primary" @onclick="OnPreviousPage" disabled="@(!CanGoPrevious)">Previous</button>
-    <span class="mt-2 mx-1">Page @PageNumber of @TotalPages</span>
+    <span class="mt-1 mx-1">Page @PageNumber of @TotalPages</span>
     <button class="btn btn-primary" @onclick="OnNextPage" disabled="@(!CanGoNext)">Next</button>
 </div>
 
