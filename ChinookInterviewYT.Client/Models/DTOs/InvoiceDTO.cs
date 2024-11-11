@@ -10,6 +10,6 @@
         public string? BillingPostalCode { get; set; }
         public decimal? InvoiceTotal { get; set; }
 
-        public List<InvoiceLine> LineItems { get; set; } = new();
+        public List<InvoiceLineDTO> LineItems { get; set; } = new();
     }
 }
