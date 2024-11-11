@@ -1,56 +1,53 @@
 ﻿@page "/challengeone"
 @using ChinookInterviewYT.Client.Models.DTOs
+@using ChinookInterviewYT.Client.Components
 @rendermode InteractiveWebAssembly
 @inject HttpClient Http
 
 <div class="container-xxl my-3">
 
-        <h3 class="ctaTitle">Challenge One</h3>
-        <p class="ctaSubTitle">Display a list of all customers in the database ordered by Last Name.</p>
-   
-        <!-- Search Input -->
-    <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Search customers by name..." @bind="searchTerm" />
-        <button class="btn btn-primary" @onclick="OnSearch">Search</button>
-        @if (isSearchActive)
-        {
-            <button class="btn btn-secondary ms-2" @onclick="ClearSearch">Clear Search</button>
-        }
-    </div>
+    <h3 class="ctaTitle">Challenge One</h3>
+    <p class="ctaSubTitle">Display a list of all customers in the database ordered by Last Name.</p>
+
+    <!-- Search Component -->
+    <SearchComponent SearchTerm="searchTerm"
+    IsSearchActive="isSearchActive"
+    Placeholder="Search Customers by Name . . . "
+    OnSearch="OnSearch"
+    OnClearSearch="ClearSearch" />
 
     @if (!isLoading && pagedCustomer.Customers != null && pagedCustomer.Customers.Any())
     {
         <table class="table table-striped table-primary shadow">
-        <thead class="table-dark">
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Full Name</th>
-            </tr>
-        </thead>
-        <tbody>
+            <thead class="table-dark">
+                <tr>
+                    <th>Last Name</th>
+                    <th>First Name</th>
+                    <th>Email</th>
+                    <th>Full Name</th>
+                </tr>
+            </thead>
+            <tbody>
                 @foreach (var customer in pagedCustomer.Customers)
                 {
                     <tr>
-                    <td>@customer.FirstName</td>
-                    <td>@customer.LastName</td>
-                    <td>@customer.Email</td>
-                    <td>@customer.FullName</td>
-                   </tr>
+                        <td>@customer.LastName</td>
+                        <td>@customer.FirstName</td>
+                        <td>@customer.Email</td>
+                        <td>@customer.FullName</td>
+                    </tr>
                 }
             </tbody>
         </table>
 
-        @if (!isSearchActive)
-        {
-            <!-- Display pagination only if not in search mode -->
-            <div class="pagination">
-                <button class="btn btn-primary" @onclick="PreviousPage" disabled="@(!CanGoPrevious)">Previous</button>
-            <span>Page @pagedCustomer.PageNumber of @pagedCustomer.TotalPages</span>
-            <button class="btn btn-primary" @onclick="NextPage" disabled="@(!CanGoNext)">Next</button>
-        </div>
-        }
+        @* @if (!isSearchActive) *@
+        
+            <!-- Pagination Component -->
+            <PaginationComponent PageNumber="pagedCustomer.PageNumber"
+            TotalPages="pagedCustomer.TotalPages"
+            OnNext="NextPage"
+            OnPrevious="PreviousPage" />
+        
     }
     else if (!isLoading)
     {
@@ -58,7 +55,7 @@
     }
     else
     {
-      <p>Loading ...</p>
+        <p>Loading ...</p>
     }
 </div>
 
@@ -120,8 +117,9 @@
     }
 
 
-    private async Task OnSearch()
+    private async Task OnSearch(string term)
     {
+        searchTerm = term;
         isSearchActive = true;
         // Load the first page with the search term
         await LoadCustomersAsync(1);
@@ -140,7 +138,7 @@
 
     private async Task NextPage()
     {
-        if (!isSearchActive && CanGoNext)
+        if (CanGoNext) /* if (!isSearchActive && CanGoNext) */
         {
             await LoadCustomersAsync(pagedCustomer.PageNumber + 1);
         }
@@ -148,7 +146,7 @@
 
     private async Task PreviousPage()
     {
-        if (!isSearchActive && CanGoPrevious)
+        if (CanGoPrevious)        /* if (!isSearchActive && CanGoPrevious) */
         {
             await LoadCustomersAsync(pagedCustomer.PageNumber - 1);
         }

@@ -1,8 +1,9 @@
 ﻿<!-- SearchComponent.razor -->
 
 <div class="input-group mb-3">
-    <input type="text" class="form-control" placeholder="@dynamicPlaceholder" @bind="internalSearchTerm" @onfocus="ClearPlaceholder"
-           @onblur="RestorePlaceholder" />
+    <input type="text" class="form-control" placeholder="@dynamicPlaceholder"
+           @bind="internalSearchTerm" @onfocus="ClearPlaceholder"
+           @onblur="RestorePlaceholder" @onkeyup="HandleKeyUp" />
     <button class="btn btn-primary" @onclick="OnSearchClick">Search</button>
     @if (IsSearchActive)
     {
@@ -49,6 +50,14 @@
         IsSearchActive = true;
         SearchTerm = internalSearchTerm!;
         await OnSearch.InvokeAsync(SearchTerm);
+    }
+
+    private async Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await OnSearchClick(); // Trigger the search on Enter key press
+        }
     }
 
     private async Task OnClearSearchClick()
