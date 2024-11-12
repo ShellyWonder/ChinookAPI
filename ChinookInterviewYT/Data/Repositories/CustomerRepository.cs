@@ -50,6 +50,7 @@ namespace ChinookInterviewYT.Data.Repositories
                                                  LineItems = i.InvoiceLines.Select(il => new InvoiceLineDTO
                                                  {
                                                     InvoiceLineId = il.InvoiceLineId,
+                                                    TrackTitle = il.Track.Name,
                                                     TrackId = il.InvoiceLineId,
                                                     UnitPrice = il.UnitPrice,
                                                     Quantity = il.Quantity,

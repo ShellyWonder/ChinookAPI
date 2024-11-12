@@ -1,10 +1,142 @@
 ﻿@page "/challengethree"
-
+@rendermode InteractiveWebAssembly
+@inject HttpClient Http
+@inject NavigationManager Nav
 <div class="container-xxl my-3">
 
-    <h3 class="ctaTitle">Challenge Three</h3>
-    <p class="ctaSubTitle">Display a list of all customers in the database ordered by Last Name.</p>
-</div>
-@code {
+    <h3 class="ctaTitle">Challenge Three: Display Invoices and Invoice Items</h3>
+    <p class="ctaSubTitle">Retrieve all invoices, the customer’s first and last name, and the invoice total.<br />
+        The output is ordered by the customer’s last name and first name</p>
 
+    <div class="d-flex justify-content-start mb-2">
+        <div>
+            <InputSelect id="customerSelect" class="form-select" @bind-Value="CustomerId" @bind-Value:after ="OnCustomerSelected">
+                <option value="0">All</option>
+                @foreach (var customer in customerList)
+                {
+                    <option value="@CustomerId">@customer.FullName</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+    @foreach (var customer in pagedCustomers.Customers)
+    {
+        <div class="border border-1 p-2 mb-5">
+            <div class="h2">@customer.FullName</div>
+            @foreach (var invoice in customer.Invoices!)
+            {
+                <div class="ms-4 mb-4">
+                    <table class="table table-primary table-striped shadow">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="colspan-4">
+                                    Invoice Date: @invoice.InvoiceDate.ToShortDateString()
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>Track Name</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Sub Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var lineItem in invoice.LineItems)
+                            {
+                                <tr>
+                                    <td>@lineItem.TrackTitle</td>
+                                    <td>@lineItem.UnitPrice</td>
+                                    <td>@lineItem.Quantity</td>
+                                    <td>@lineItem.SubTotal</td>
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="3"class="text-end fw-bold">Invoice Total:</td>
+                                <td>@invoice.InvoiceTotal</td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+        </div>
+    }
+
+
+    <!-- Pagination Component -->
+    <PaginationComponent PageNumber="pagedCustomers.PageNumber"
+    TotalPages="pagedCustomers.TotalPages"
+    OnNext="NextPage"
+    OnPrevious="PreviousPage" />
+</div>
+
+
+@code {
+    [SupplyParameterFromQuery]
+    private int PageNumber { get; set; } = 1;
+
+    [SupplyParameterFromQuery]
+    private int PageSize { get; set; } = 10;
+
+    [SupplyParameterFromQuery]
+    private int CustomerId { get; set; } = 0;
+
+    //generates List of Invoices
+    private PagedCustomerInvoiceDTO pagedCustomers = new();
+    //generates data for the dropdowns
+    private List<CustomerDTO> customerList = new();
+
+    private bool IsLoading = true;
+
+    //  Pagination properties
+    private bool CanGoNext => pagedCustomers.PageNumber < pagedCustomers.TotalPages;
+    private bool CanGoPrevious => pagedCustomers.PageNumber > 1;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            customerList = await Http.GetFromJsonAsync<List<CustomerDTO>>("api/Customers/GetAllCustomersDTO");
+
+            if (customerList == null) customerList = new();
+            
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            pagedCustomers = await Http.GetFromJsonAsync<PagedCustomerInvoiceDTO>($"api/Customers/GetInvoicesWithLineItems?PageNumber={PageNumber}&PageSize={PageSize}&CustomerId={CustomerId}")
+            ?? throw new HttpIOException(HttpRequestError.InvalidResponse);
+        }
+        catch 
+        {
+            pagedCustomers = new();
+        }
+        IsLoading = false;
+    }
+
+    private async Task NextPage()
+    {
+        if (CanGoNext)
+        {
+            await OnParametersSetAsync();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (CanGoPrevious)
+        {
+            await OnParametersSetAsync();
+        }
+    }
+
+    private void OnCustomerSelected()
+    {
+        PageNumber = 1;
+    }
+    
 }
