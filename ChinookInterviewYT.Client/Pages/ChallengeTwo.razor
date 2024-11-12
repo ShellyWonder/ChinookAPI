@@ -12,57 +12,57 @@
         Write a query that retrieves all artists, their albums, and the corresponding tracks. 
         The output is ordered by the artist’s name, album title, and track title. 
     </p>
-   
-   
+
+
     @if (!isLoading)
     {
-        
-        
+
+
         <div class="artist-list">
             @foreach (var artist in pagedArtistDTO?.Artists ?? new List<ArtistDTO>())
             {
                 <div> 
-               <div class="fw-bold fs-3 my-2">@artist.ArtistName</div>
-                   @foreach (var album in artist.Albums)
-                   {
-                            //hstack = horizontal stack makes it a flexbox
-                          <div class="hstack gap-3 align-items-start mb-3">
-                                <div>
-                                    <img class="coverArt" src="/images/AlbumPlaceHolder.png"/>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="fw-bold fs-5">@album.AlbumTitle
+                    <div class="fw-bold fs-3 my-2">@artist.ArtistName</div>
+                    @foreach (var album in artist.Albums)
+                    {
+                        //hstack = horizontal stack makes it a flexbox
+                        <div class="hstack gap-3 align-items-start mb-3">
+                            <div>
+                                <img class="coverArt" src="/images/AlbumPlaceHolder.png"/>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold fs-5">@album.AlbumTitle
                                     <span class="lead">
-                                            (Total Duration: @TimeSpan.FromMilliseconds(album.TotalAlbumDuration).ToString("hh\\:mm\\:ss"))
+                                        (Total Duration: @TimeSpan.FromMilliseconds(album.TotalAlbumDuration).ToString("hh\\:mm\\:ss"))
                                     </span>
-                                    </div>
-                                    <div class="lead">Track List</div>
-                                    <ol>
-                                        @foreach (var track in album.Tracks)
-                                        {
-                                           <li class="trackList">
-                                               @track.TrackTitle
-                                           </li> 
-                                        }
-                                    </ol>
+                                </div>
+                                <div class="lead">Track List</div>
+                                <ol>
+                                    @foreach (var track in album.Tracks)
+                                    {
+                                        <li class="trackList">
+                                            @track.TrackTitle
+                                        </li> 
+                                    }
+                                </ol>
 
-                                </div> 
-                          </div>  
-                   }
+                            </div> 
+                        </div>  
+                    }
 
                 </div>
             }
         </div>
         <!-- Pagination Component -->
         <PaginationComponent PageNumber="pagedArtistDTO!.PageNumber"
-                             TotalPages="pagedArtistDTO.TotalPages"
-                             OnNext="NextPage"
-                             OnPrevious="PreviousPage" />
+        TotalPages="pagedArtistDTO.TotalPages"
+        OnNext="NextPage"
+        OnPrevious="PreviousPage" />
     }
-    
+
     else
     {
-      <p>Loading ...</p>
+        <p>Loading ...</p>
     }
 </div>
 
@@ -105,49 +105,31 @@
 
 
     }
-    // //  Pagination properties
-    // private bool CanGoNext => pagedArtistDTO?.PageNumber < pagedArtistDTO?.TotalPages;
-    // private bool CanGoPrevious => pagedArtistDTO?.PageNumber > 1;
 
-    // private void NextPage()
-    // {
-    //     PageNumber = pagedArtistDTO?.PageNumber + 1 ?? PageNumber;
-    //     GetPage(PageNumber);
-    // }
-
-    // private void PreviousPage()
-    // {
-        
-    //     PageNumber = pagedArtistDTO?.PageNumber - 1 ?? PageNumber;
-    //     GetPage(PageNumber);
-    // }
-    // private void GetPage(int pageNumber)
-    // {
-    //     Dictionary<string, object?> query = new()
-    //     {
-    //         {"pageNumber", pageNumber},
-    //         {"pageSize", pagedArtistDTO?.PageSize ?? PageSize},
-    //     };
-    //     string url = Nav.GetUriWithQueryParameters(query);
-    //     Nav.NavigateTo(url);
-    // }
     //  Pagination properties
     private bool CanGoNext => pagedArtistDTO!.PageNumber < pagedArtistDTO.TotalPages;
     private bool CanGoPrevious => pagedArtistDTO!.PageNumber > 1;
 
-    private async Task NextPage()
+    private void NextPage()
     {
-        if (CanGoNext)
-        {
-            await OnParametersSetAsync();
-        }
+        PageNumber = pagedArtistDTO?.PageNumber + 1 ?? PageNumber;
+        GetPage(PageNumber);
     }
 
-    private async Task PreviousPage()
+    private void PreviousPage()
     {
-        if (CanGoPrevious)
+
+        PageNumber = pagedArtistDTO?.PageNumber - 1 ?? PageNumber;
+        GetPage(PageNumber);
+    }
+    private void GetPage(int pageNumber)
+    {
+        Dictionary<string, object?> query = new()
         {
-            await OnParametersSetAsync();
-        }
+            {"pageNumber", pageNumber},
+            {"pageSize", pagedArtistDTO?.PageSize ?? PageSize},
+        };
+        string url = Nav.GetUriWithQueryParameters(query);
+        Nav.NavigateTo(url);
     }
 }
