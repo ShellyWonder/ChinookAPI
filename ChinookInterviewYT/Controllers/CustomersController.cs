@@ -20,6 +20,7 @@ namespace ChinookInterviewYT.Controllers
         {
             try
             {
+
                 var (customers, totalCount) = await _customerService.GetPagedCustomersAsync(pageNumber, pageSize);
                 var pagedResult = new PagedCustomerDTO
                 {
@@ -38,10 +39,30 @@ namespace ChinookInterviewYT.Controllers
             }
         }
         #endregion
+        #region GET CUSTOMERS VIA CUSTOMER DTO
+        [HttpGet("GetAllCustomersDTO")]
+        public async Task<ActionResult<CustomerDTO>> GetAllCustomersDTOAsync()
+        {
+            try
+            {
+                var customers = await _customerService.GetAllCustomersDTOAsync();
+
+                if (customers == null) customers = new List<CustomerDTO>();
+                return Ok(customers);
+            }
+
+	        catch (Exception ex)
+	        {
+
+		        Console.WriteLine(ex.Message);
+                return Problem();
+	        }
+        }
+        #endregion
 
         #region SEARCH INDEX
         [HttpGet("search")]
-        public async Task<ActionResult<SearchResultDTO<Customer>>> SearchIndex(int? page, string searchTerm)
+        public async Task<ActionResult<PagedResultDTO<Customer>>> SearchIndex(int? page, string searchTerm)
         {
             if (string.IsNullOrEmpty(searchTerm))
             {
@@ -56,7 +77,7 @@ namespace ChinookInterviewYT.Controllers
             var (customers, totalCount) = await _searchService.SearchCustomersAsync(pageNumber, pageSize, searchTerm);
 
             // Create the SearchResultDTO
-            var searchResult = new SearchResultDTO<Customer>
+            var searchResult = new PagedResultDTO<Customer>
             {
                 Results = customers,
                 TotalCount = totalCount
@@ -65,5 +86,27 @@ namespace ChinookInterviewYT.Controllers
             return Ok(searchResult);
         }
         #endregion
+
+        #region GET INVOICES WITH LINE ITEMS
+        [HttpGet("GetInvoicesWithLineItems")]
+        public async Task<ActionResult<PagedCustomerInvoiceDTO>>GetInvoicesWithLineItems([FromQuery]int pageNumber = 1, int pageSize = 10, int customerId = 0)
+        {
+            try
+            {
+                if (pageNumber < 1) pageNumber = 1;
+                if (pageSize < 1 || pageSize> 25) pageSize = 10;
+
+                var customers = await _customerService.GetAllCustomersInvoicesAsync(pageNumber, pageSize, customerId);
+                 return Ok(customers);
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+                return Problem();
+            }
+        }
+        #endregion
+
     }
 }
