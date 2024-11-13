@@ -137,17 +137,12 @@
 
     private async Task NextPage()
     {
-        if (CanGoNext) 
-        {
-            await LoadCustomersAsync(pagedCustomer.PageNumber + 1);
-        }
-    }
+        if (CanGoNext) await LoadCustomersAsync(pagedCustomer.PageNumber + 1);
+     }
 
     private async Task PreviousPage()
     {
-        if (CanGoPrevious)       
-        {
-            await LoadCustomersAsync(pagedCustomer.PageNumber - 1);
-        }
+        if (CanGoPrevious) await LoadCustomersAsync(pagedCustomer.PageNumber - 1);
+   
     }
 }

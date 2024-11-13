@@ -1,9 +1,9 @@
 ﻿<!-- PaginationComponent.razor -->
 
 <div class="d-flex justify-content-center align-items-center">
-    <button class="btn btn-primary" @onclick="OnPreviousPage" disabled="@(!CanGoPrevious)">Previous</button>
+    <button class="btn btn-primary" @onclick="PreviousPage" disabled="@(!CanGoPrevious)">Previous</button>
     <span class="mt-1 mx-1">Page @PageNumber of @TotalPages</span>
-    <button class="btn btn-primary" @onclick="OnNextPage" disabled="@(!CanGoNext)">Next</button>
+    <button class="btn btn-primary" @onclick="NextPage" disabled="@(!CanGoNext)">Next</button>
 </div>
 
 @code {
@@ -14,27 +14,27 @@
     public int TotalPages { get; set; }
 
     [Parameter]
-    public EventCallback OnNext { get; set; }
+    public EventCallback<int> OnNext { get; set; }
 
     [Parameter]
-    public EventCallback OnPrevious { get; set; }
+    public EventCallback<int> OnPrevious { get; set; }
 
     private bool CanGoPrevious => PageNumber > 1;
     private bool CanGoNext => PageNumber < TotalPages;
 
-    private async Task OnPreviousPage()
+    private async Task PreviousPage()
     {
         if (CanGoPrevious)
         {
-            await OnPrevious.InvokeAsync();
+            await OnPrevious.InvokeAsync(PageNumber - 1); // Notify parent to load the previous page
         }
     }
 
-    private async Task OnNextPage()
+    private async Task NextPage()
     {
         if (CanGoNext)
         {
-            await OnNext.InvokeAsync();
+            await OnNext.InvokeAsync(PageNumber + 1); // Notify parent to load the next page
         }
     }
 }
