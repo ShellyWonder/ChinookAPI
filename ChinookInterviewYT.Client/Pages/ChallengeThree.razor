@@ -1,4 +1,6 @@
 ﻿@page "/challengethree"
+@using ChinookInterviewYT.Client.Models.Wrappers
+@using ChinookInterviewYT.Client.Components
 @rendermode InteractiveWebAssembly
 @inject HttpClient Http
 @inject NavigationManager Nav
@@ -8,66 +10,85 @@
     <p class="ctaSubTitle">Retrieve all invoices, the customer’s first and last name, and the invoice total.<br />
         The output is ordered by the customer’s last name and first name</p>
 
-    <div class="d-flex justify-content-start mb-2">
-        <div>
-            <InputSelect id="customerSelect" class="form-select" @bind-Value="CustomerId" @bind-Value:after ="OnCustomerSelected">
-                <option value="0">All</option>
-                @foreach (var customer in customerList)
-                {
-                    <option value="@CustomerId">@customer.FullName</option>
-                }
-            </InputSelect>
-        </div>
-    </div>
-    @foreach (var customer in pagedCustomers.Customers)
+    @if (!IsLoading)
     {
-        <div class="border border-1 p-2 mb-5">
-            <div class="h2">@customer.FullName</div>
-            @foreach (var invoice in customer.Invoices!)
-            {
-                <div class="ms-4 mb-4">
-                    <table class="table table-primary table-striped shadow">
-                        <thead class="table-dark">
-                            <tr>
-                                <th class="colspan-4">
-                                    Invoice Date: @invoice.InvoiceDate.ToShortDateString()
-                                </th>
-                            </tr>
-                            <tr>
-                                <th>Track Name</th>
-                                <th>Price</th>
-                                <th>Qty</th>
-                                <th>Sub Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var lineItem in invoice.LineItems)
-                            {
-                                <tr>
-                                    <td>@lineItem.TrackTitle</td>
-                                    <td>@lineItem.UnitPrice</td>
-                                    <td>@lineItem.Quantity</td>
-                                    <td>@lineItem.SubTotal</td>
-                                </tr>
-                            }
-                            <tr>
-                                <td colspan="3"class="text-end fw-bold">Invoice Total:</td>
-                                <td>@invoice.InvoiceTotal</td>
-                            </tr>
-                        </tbody>
+        <div class="d-flex justify-content-start mb-2">
+            <div class="row">
+               <div class="col-12">
+                    <InputSelect id="customerSelect" class="form-select" @bind-Value="CustomerId" @bind-Value:after ="OnCustomerSelected">
+                        <option value="0">All</option>
+                        @foreach (var customer in customerList)
+                        {
+                            <option value="@customer.CustomerId">@customer.FullName</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+        </div>
 
-                    </table>
+        @if (customersResponse?.Results?.Customers != null && customersResponse.Results.Customers.Any())
+        {
+            @foreach (var customer in customersResponse.Results.Customers)
+            {
+
+                <div class="border border-1 p-2 mb-5">
+                    <div class="h2">@customer.FullName</div>
+                    @foreach (var invoice in customer.Invoices!)
+                    {
+                        <div class="ms-4 mb-4">
+                            <table class="table table-primary table-striped shadow">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="colspan-4">
+                                            Invoice Date: @invoice.InvoiceDate.ToShortDateString()
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>Track Name</th>
+                                        <th>Price</th>
+                                        <th>Qty</th>
+                                        <th>Sub Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var lineItem in invoice.LineItems)
+                                    {
+                                        <tr>
+                                            <td>@lineItem.TrackTitle</td>
+                                            <td>@lineItem.UnitPrice</td>
+                                            <td>@lineItem.Quantity</td>
+                                            <td>@lineItem.SubTotal</td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td colspan="3"class="text-end fw-bold">Invoice Total:</td>
+                                        <td>@invoice.InvoiceTotal</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    }
                 </div>
             }
-        </div>
+        }
+        else
+        {
+            <p>No invoices found.</p>
+        }
+
+        <!-- Pagination Component -->
+        <PaginationComponent PageNumber="pagedCustomers?.PageNumber ?? 0"
+        TotalPages="pagedCustomers?.TotalPages ?? 1"
+        OnNext="NextPage"
+        OnPrevious="PreviousPage" />
+    }
+    else
+    {
+        <p>Loading Invoices . . .</p>
     }
 
 
-    <!-- Pagination Component -->
-    <PaginationComponent PageNumber="pagedCustomers.PageNumber"
-    TotalPages="pagedCustomers.TotalPages"
-    OnNext="NextPage"
-    OnPrevious="PreviousPage" />
 </div>
 
 
@@ -82,7 +103,8 @@
     private int CustomerId { get; set; } = 0;
 
     //generates List of Invoices
-    private PagedCustomerInvoiceDTO pagedCustomers = new();
+    private InvoiceResponseWrapper? customersResponse;
+    private PagedCustomerInvoiceDTO pagedCustomers => customersResponse?.Results!;
     //generates data for the dropdowns
     private List<CustomerDTO> customerList = new();
 
@@ -96,10 +118,7 @@
     {
         if (firstRender)
         {
-            customerList = await Http.GetFromJsonAsync<List<CustomerDTO>>("api/Customers/GetAllCustomersDTO");
-
-            if (customerList == null) customerList = new();
-            
+            customerList = await Http.GetFromJsonAsync<List<CustomerDTO>>("api/Customers/GetAllCustomersDTO") ?? new List<CustomerDTO>();
         }
     }
 
@@ -108,12 +127,12 @@
         IsLoading = true;
         try
         {
-            pagedCustomers = await Http.GetFromJsonAsync<PagedCustomerInvoiceDTO>($"api/Customers/GetInvoicesWithLineItems?PageNumber={PageNumber}&PageSize={PageSize}&CustomerId={CustomerId}")
+            customersResponse = await Http.GetFromJsonAsync<InvoiceResponseWrapper>($"api/Customers/GetInvoicesWithLineItems?PageNumber={PageNumber}&PageSize={PageSize}&CustomerId={CustomerId}")
             ?? throw new HttpIOException(HttpRequestError.InvalidResponse);
         }
         catch 
         {
-            pagedCustomers = new();
+            customersResponse = new();
         }
         IsLoading = false;
     }
@@ -122,6 +141,7 @@
     {
         if (CanGoNext)
         {
+            PageNumber++;
             await OnParametersSetAsync();
         }
     }
@@ -130,6 +150,7 @@
     {
         if (CanGoPrevious)
         {
+            PageNumber--;
             await OnParametersSetAsync();
         }
     }
@@ -137,6 +158,19 @@
     private void OnCustomerSelected()
     {
         PageNumber = 1;
+        GetPage(PageNumber);
+    }
+
+    private void GetPage(int pageNumber)
+    {
+        Dictionary<string, object?> query = new()
+        {
+            {"pageNumber", pageNumber},
+            {"pageSize", PageSize},
+            {"CustomerId", CustomerId}
+        };
+        string url = Nav.GetUriWithQueryParameters(query);
+        Nav.NavigateTo(url);
     }
     
 }

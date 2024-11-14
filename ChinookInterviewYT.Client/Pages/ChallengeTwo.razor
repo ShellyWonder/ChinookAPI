@@ -58,7 +58,7 @@
 
     else
     {
-        <p>Loading ...</p>
+        <p>Loading Artists...</p>
     }
 </div>
 
@@ -69,7 +69,7 @@
     [SupplyParameterFromQuery]
     public int PageSize { get; set; } = 10;
 
-    private ArtistsResponse? artistsResponse;
+    private ArtistsResponseWrapper? artistsResponse;
     private PagedArtistDTO? pagedArtistDTO => artistsResponse?.Value;
     private bool isLoading = true;
 
@@ -79,13 +79,13 @@
 
         try
         {
-            artistsResponse = await Http.GetFromJsonAsync<ArtistsResponse>($"api/Artists/AlbumsandTracksPaged?pageNumber={PageNumber}&pageSize={PageSize}")
+            artistsResponse = await Http.GetFromJsonAsync<ArtistsResponseWrapper>($"api/Artists/AlbumsandTracksPaged?pageNumber={PageNumber}&pageSize={PageSize}")
             ?? throw new HttpIOException(HttpRequestError.InvalidResponse);
         }
         catch (Exception)
         {
 
-            artistsResponse = new ArtistsResponse
+            artistsResponse = new ArtistsResponseWrapper
                 {
                     Value = new PagedArtistDTO
                     {
