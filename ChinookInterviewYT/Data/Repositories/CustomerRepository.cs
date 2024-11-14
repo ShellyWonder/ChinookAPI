@@ -10,11 +10,14 @@ namespace ChinookInterviewYT.Data.Repositories
     {
         private readonly ChinookDbContext _context;
 
+     #region CONSTRUCTOR
         public CustomerRepository(ChinookDbContext context)
         {
             _context = context;
-        }
-        
+        } 
+        #endregion
+
+     #region GET ALL CUSTOMERS + PAGING
         //Customers + paging
         public async Task<List<Customer>> GetAllCustomersAsync(int pageNumber, int pageSize)
         {
@@ -25,7 +28,9 @@ namespace ChinookInterviewYT.Data.Repositories
                                 .Take(pageSize)
                                 .ToListAsync();
         }
+        #endregion
 
+     #region GET CUSTOMER INVOICES
         //Customers + paging + filter by customer Id
         public async Task<PagedResultDTO<CustomerInvoiceDTO>> GetAllCustomersInvoicesAsync(int pageNumber, int pageSize, int customerId)
         {
@@ -33,7 +38,7 @@ namespace ChinookInterviewYT.Data.Repositories
 
             if (customerId > 0) query = query.Where(c => c.CustomerId == customerId);
 
-            int TotalRecords =  await query.CountAsync();
+            int TotalRecords = await query.CountAsync();
             var customers = await query.Skip((pageNumber - 1) * pageSize)
                                          .Take(pageSize)
                                          .Select(c => new CustomerInvoiceDTO
@@ -49,11 +54,11 @@ namespace ChinookInterviewYT.Data.Repositories
                                                  InvoiceTotal = i.Total,
                                                  LineItems = i.InvoiceLines.Select(il => new InvoiceLineDTO
                                                  {
-                                                    InvoiceLineId = il.InvoiceLineId,
-                                                    TrackTitle = il.Track.Name,
-                                                    TrackId = il.InvoiceLineId,
-                                                    UnitPrice = il.UnitPrice,
-                                                    Quantity = il.Quantity,
+                                                     InvoiceLineId = il.InvoiceLineId,
+                                                     TrackTitle = il.Track.Name,
+                                                     TrackId = il.InvoiceLineId,
+                                                     UnitPrice = il.UnitPrice,
+                                                     Quantity = il.Quantity,
                                                  }).ToList()
                                              }).ToList(),
                                          }).ToListAsync();
@@ -63,10 +68,16 @@ namespace ChinookInterviewYT.Data.Repositories
                 TotalCount = TotalRecords
             };
         }
+        #endregion
+
+     #region GET TOTAL CUSTOMER COUNT
         public async Task<int> GetTotalCustomersAsync()
         {
-             return await _context.Customers.CountAsync();
+            return await _context.Customers.CountAsync();
         }
+        #endregion
+
+     #region GET ALL CUSTOMERS VIA CUSTOMER DTO 
         public async Task<List<CustomerDTO>> GetAllCustomersDTOAsync()
         {
             return await _context.Customers
@@ -87,5 +98,25 @@ namespace ChinookInterviewYT.Data.Repositories
                                 })
                                 .ToListAsync();
         }
+        #endregion
+
+     #region CUSTOMER SPENDING OVER $40
+        public async Task<List<CustomerSpendingDTO>> GetAllCustomersSpendingAsync()
+        {
+            decimal TotalStoreRevenue = await _context.Invoices.SumAsync(i => i.Total);
+            var result = await _context.Customers
+                                                           .Where(c => c.Invoices.Sum(i => i.Total) > 40)
+                                                           .Select(c => new CustomerSpendingDTO
+                                                           {
+                                                               CustomerId = c.CustomerId,
+                                                               FullName = c.FirstName + " " + c.LastName,
+                                                               TotalInvoices = c.Invoices.Count(),
+                                                               TotalAmountSpent = c.Invoices.Sum(i => i.Total),
+                                                               PercentageOfTotalRevenue = c.Invoices.Sum(i => i.Total) / TotalStoreRevenue,
+                                                           }).OrderByDescending(c => c.TotalAmountSpent)
+                                                           .ToListAsync();
+            return result;
+        } 
+        #endregion
     }
 }
