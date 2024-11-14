@@ -13,7 +13,7 @@ namespace ChinookInterviewYT.Services
             _customerRepository = customerRepository;
         }
 
-        public async Task<(List<Customer> Customers, int TotalCount)>GetPagedCustomersAsync(int pageNumber, int pageSize)
+        public async Task<(List<Customer> Customers, int TotalCount)> GetPagedCustomersAsync(int pageNumber, int pageSize)
         {
             var customers = await _customerRepository.GetAllCustomersAsync(pageNumber, pageSize);
             var totalCount = await _customerRepository.GetTotalCustomersAsync();
@@ -22,12 +22,18 @@ namespace ChinookInterviewYT.Services
 
         public async Task<List<CustomerDTO>> GetAllCustomersDTOAsync()
         {
-            return  await _customerRepository.GetAllCustomersDTOAsync();
+            return await _customerRepository.GetAllCustomersDTOAsync();
         }
 
         public async Task<PagedResultDTO<CustomerInvoiceDTO>> GetAllCustomersInvoicesAsync(int pageNumber, int pageSize, int customerId)
         {
             return await _customerRepository.GetAllCustomersInvoicesAsync(pageNumber, pageSize, customerId);
+        }
+
+        public async Task<List<CustomerSpendingDTO>> GetAllCustomersSpendingAsync()
+        {
+            var result = await _customerRepository.GetAllCustomersSpendingAsync();
+            return result;
         }
     }
 }

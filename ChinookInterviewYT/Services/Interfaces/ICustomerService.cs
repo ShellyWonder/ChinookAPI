@@ -8,5 +8,6 @@ namespace ChinookInterviewYT.Services.Interfaces
         Task<(List<Customer> Customers, int TotalCount)> GetPagedCustomersAsync(int pageNumber, int pageSize);
         Task<PagedResultDTO<CustomerInvoiceDTO>> GetAllCustomersInvoicesAsync(int pageNumber, int pageSize, int customerId);
         Task<List<CustomerDTO>> GetAllCustomersDTOAsync();
+        Task<List<CustomerSpendingDTO>> GetAllCustomersSpendingAsync();
     }
 }

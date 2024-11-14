@@ -13,6 +13,9 @@ namespace ChinookInterviewYT.Data.Repositories.Interfaces
 
         // customer + pagination + customerId
         Task<PagedResultDTO<CustomerInvoiceDTO>> GetAllCustomersInvoicesAsync(int pageNumber, int pageSize, int customerId);
-        Task<List<CustomerDTO>> GetAllCustomersDTOAsync();
+        Task<List<CustomerDTO>>GetAllCustomersDTOAsync();
+
+        // Where spending > $40
+        Task <List<CustomerSpendingDTO>> GetAllCustomersSpendingAsync();
     }
 }
