@@ -14,7 +14,7 @@
     {
         <div class="d-flex justify-content-start mb-2">
             <div class="row">
-               <div class="col-12">
+                <div class="col-12">
                     <InputSelect id="customerSelect" class="form-select" @bind-Value="CustomerId" @bind-Value:after ="OnCustomerSelected">
                         <option value="0">All</option>
                         @foreach (var customer in customerList)
@@ -26,9 +26,9 @@
             </div>
         </div>
 
-        @if (customersResponse?.Results?.Customers != null && customersResponse.Results.Customers.Any())
+        @if (pagedCustomers.Customers != null && pagedCustomers.Customers.Any())
         {
-            @foreach (var customer in customersResponse.Results.Customers)
+            @foreach (var customer in pagedCustomers.Customers)
             {
 
                 <div class="border border-1 p-2 mb-5">
@@ -39,7 +39,7 @@
                             <table class="table table-primary table-striped shadow">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th class="colspan-4">
+                                        <th class="colspan-1 rounded-top">
                                             Invoice Date: @invoice.InvoiceDate.ToShortDateString()
                                         </th>
                                     </tr>
@@ -78,7 +78,7 @@
         }
 
         <!-- Pagination Component -->
-        <PaginationComponent PageNumber="pagedCustomers?.PageNumber ?? 0"
+        <PaginationComponent PageNumber="pagedCustomers?.PageNumber ?? 1"
         TotalPages="pagedCustomers?.TotalPages ?? 1"
         OnNext="NextPage"
         OnPrevious="PreviousPage" />
@@ -87,7 +87,6 @@
     {
         <p>Loading Invoices . . .</p>
     }
-
 
 </div>
 
@@ -103,8 +102,8 @@
     private int CustomerId { get; set; } = 0;
 
     //generates List of Invoices
-    private InvoiceResponseWrapper? customersResponse;
-    private PagedCustomerInvoiceDTO pagedCustomers => customersResponse?.Results!;
+
+    private PagedCustomerInvoiceDTO pagedCustomers = new();
     //generates data for the dropdowns
     private List<CustomerDTO> customerList = new();
 
@@ -127,12 +126,12 @@
         IsLoading = true;
         try
         {
-            customersResponse = await Http.GetFromJsonAsync<InvoiceResponseWrapper>($"api/Customers/GetInvoicesWithLineItems?PageNumber={PageNumber}&PageSize={PageSize}&CustomerId={CustomerId}")
+            pagedCustomers = await Http.GetFromJsonAsync<PagedCustomerInvoiceDTO>($"api/Customers/GetInvoicesWithLineItems?PageNumber={PageNumber}&PageSize={PageSize}&CustomerId={CustomerId}")
             ?? throw new HttpIOException(HttpRequestError.InvalidResponse);
         }
         catch 
         {
-            customersResponse = new();
+            pagedCustomers = new();
         }
         IsLoading = false;
     }
