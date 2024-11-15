@@ -39,6 +39,7 @@ namespace ChinookInterviewYT.Controllers
             }
         }
         #endregion
+
         #region GET CUSTOMERS VIA CUSTOMER DTO
         [HttpGet("GetAllCustomersDTO")]
         public async Task<ActionResult<CustomerDTO>> GetAllCustomersDTOAsync()
@@ -107,6 +108,27 @@ namespace ChinookInterviewYT.Controllers
             }
         }
         #endregion
+
+        #region CUSTOMER SPENDING
+        [HttpGet("CustomerSpending")]
+        public async Task<ActionResult<CustomerSpendingDTO>>GetCustomerSpendingAsync()
+        {
+            try
+            {
+                var result = await _customerService.GetAllCustomersSpendingAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+
+                Console.Write(ex.Message);
+                return Problem();   
+            }
+           
+        }
+
+        #endregion
+
 
     }
 }
