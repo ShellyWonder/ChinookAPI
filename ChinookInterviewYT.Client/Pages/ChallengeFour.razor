@@ -1,4 +1,5 @@
 ﻿@page "/challengefour"
+@using ApexCharts
 @rendermode InteractiveWebAssembly
 @inject HttpClient Http
 
@@ -8,10 +9,18 @@
     <div class="ctaSubTitle border-bottom mb-5">
         <p>Include each customer's total number of invoices and total amount spent across all invoices.
             Order the results by the total amount spent in descending order.</p>
-        </div>
+    </div>
     @if (isLoading == false)
     {
-        <div class="table-responsive">
+        <ApexChart TItem="CustomerSpendingDTO" title="Top Five Customers" height="250">
+            <ApexCharts.ApexPointSeries TItem="CustomerSpendingDTO" 
+             Items="Top5Customers"
+             SeriesType="ApexCharts.SeriesType.Bar"
+             Name="Total Sales"
+             XValue="c => c.FullName"
+             YValue="c => c.TotalAmountSpent" />
+        </ApexChart>
+        <div class="table-responsive border border-1 p-2">
             <table class="table table-striped table-primary shadow">
                 <thead class="table-dark">
                     <tr>
@@ -27,11 +36,11 @@
                     {
                         <tr>
                             <td>@customer.FullName</td>
-                            <td>@customer.TotalInvoices.ToString("N0")</td>
+                            <td class="text-center">@customer.TotalInvoices.ToString("N0")</td>
                             <td>@customer.TotalAmountSpent.ToString("C")</td>
-                            <td>@customer.PercentageOfTotalRevenue.ToString("P2")</td>
+                            <td class="text-center">@customer.PercentageOfTotalRevenue.ToString("P2")</td>
                         </tr>
-                        
+
                     }
                 </tbody>
             </table>
@@ -45,6 +54,7 @@
 
 @code {
     private List<CustomerSpendingDTO> customerSpendingList = new List<CustomerSpendingDTO>();
+    private List<CustomerSpendingDTO> Top5Customers = new List<CustomerSpendingDTO>();
     private bool isLoading = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -52,7 +62,13 @@
         if (firstRender)
         {
             isLoading = true;
-            customerSpendingList = await Http.GetFromJsonAsync<List<CustomerSpendingDTO>>("api/Customers/CustomerSpending") ?? new();
+            customerSpendingList = await Http.GetFromJsonAsync<List<CustomerSpendingDTO>>("api/Customers/CustomerSpending")?? new();
+
+            if (customerSpendingList != null)
+            {
+              Top5Customers = customerSpendingList.Take(5).ToList();
+            }
+           
             isLoading = false;
             StateHasChanged();
         }
