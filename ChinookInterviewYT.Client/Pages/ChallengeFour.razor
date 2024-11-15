@@ -1,10 +1,60 @@
 ﻿@page "/challengefour"
+@rendermode InteractiveWebAssembly
+@inject HttpClient Http
 
 <div class="container-xxl my-3">
 
-    <h3 class="ctaTitle">Challenge One</h3>
-    <p class="ctaSubTitle">Display a list of all customers in the database ordered by Last Name.</p>
-</div>
-@code {
+    <h3 class="ctaTitle">Challenge Four: Retrieve a list of customers who have spent more than $40</h3>
+    <div class="ctaSubTitle border-bottom mb-5">
+        <p>Include each customer's total number of invoices and total amount spent across all invoices.
+            Order the results by the total amount spent in descending order.</p>
+        </div>
+    @if (isLoading == false)
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-primary shadow">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Invoices</th>
+                        <th>Amount</th>
+                        <th>Revenue Percentage</th>
+                    </tr>
+                </thead>
 
+                <tbody>
+                    @foreach (var customer in customerSpendingList)
+                    {
+                        <tr>
+                            <td>@customer.FullName</td>
+                            <td>@customer.TotalInvoices.ToString("N0")</td>
+                            <td>@customer.TotalAmountSpent.ToString("C")</td>
+                            <td>@customer.PercentageOfTotalRevenue.ToString("P2")</td>
+                        </tr>
+                        
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else{
+        <div> Data is Loading . . . </div>
+    }
+
+</div>
+
+@code {
+    private List<CustomerSpendingDTO> customerSpendingList = new List<CustomerSpendingDTO>();
+    private bool isLoading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isLoading = true;
+            customerSpendingList = await Http.GetFromJsonAsync<List<CustomerSpendingDTO>>("api/Customers/CustomerSpending") ?? new();
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
 }

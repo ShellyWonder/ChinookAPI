@@ -1,5 +1,4 @@
 ﻿@page "/challengethree"
-@using ChinookInterviewYT.Client.Models.Wrappers
 @using ChinookInterviewYT.Client.Components
 @rendermode InteractiveWebAssembly
 @inject HttpClient Http
@@ -35,7 +34,7 @@
                     <div class="h2">@customer.FullName</div>
                     @foreach (var invoice in customer.Invoices!)
                     {
-                        <div class="ms-4 mb-4">
+                        <div class="table-responsive ms-4 mb-4">
                             <table class="table table-primary table-striped shadow">
                                 <thead class="table-dark">
                                     <tr>
@@ -102,7 +101,6 @@
     private int CustomerId { get; set; } = 0;
 
     //generates List of Invoices
-
     private PagedCustomerInvoiceDTO pagedCustomers = new();
     //generates data for the dropdowns
     private List<CustomerDTO> customerList = new();
