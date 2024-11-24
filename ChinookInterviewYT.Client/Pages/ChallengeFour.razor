@@ -3,24 +3,28 @@
 @rendermode InteractiveWebAssembly
 @inject HttpClient Http
 
+<title>Challenge Four</title>
+
 <div class="container-xxl my-3">
 
-    <h3 class="ctaTitle">Challenge Four: Retrieve a list of customers who have spent more than $40</h3>
-    <div class="ctaSubTitle border-bottom mb-5">
+    <h3 class="ctaTitle">Challenge Four: List customers who have spent more than $40</h3>
+    <div class="ctaSubTitle border-bottom mb-3">
         <p>Include each customer's total number of invoices and total amount spent across all invoices.
             Order the results by the total amount spent in descending order.</p>
     </div>
     @if (isLoading == false)
     {
-        <ApexChart TItem="CustomerSpendingDTO" title="Top Five Customers" height="250">
-            <ApexCharts.ApexPointSeries TItem="CustomerSpendingDTO" 
-             Items="Top5Customers"
-             SeriesType="ApexCharts.SeriesType.Bar"
-             Name="Total Sales"
-             XValue="c => c.FullName"
-             YValue="c => c.TotalAmountSpent" />
-        </ApexChart>
-        <div class="table-responsive border border-1 p-2">
+        <div class="row">
+            <ApexChart TItem="CustomerSpendingDTO" title="Top Five Customers" height="225" >
+                <ApexCharts.ApexPointSeries TItem="CustomerSpendingDTO" 
+                 Items="Top5Customers"
+                 SeriesType="ApexCharts.SeriesType.Bar"
+                 Name="Total Sales"
+                 XValue="c => c.FullName"
+                 YValue="c => c.TotalAmountSpent" />
+            </ApexChart>
+        </div>
+        <div class="table-responsive border border-1 mt-5 p-2">
             <table class="table table-striped table-primary shadow">
                 <thead class="table-dark">
                     <tr>
